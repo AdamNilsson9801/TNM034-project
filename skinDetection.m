@@ -1,6 +1,6 @@
 function faceMask = skinDetection(im)
 
-[columns, rows] = size(im);
+[columns, rows, channel] = size(im);
 
 %RGB to HSV, separate
 HSV = rgb2hsv(im);

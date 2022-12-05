@@ -16,7 +16,6 @@ se1 = strel('disk', 9);
 imOp = imopen(imChrom,se1);
 imCl = imclose(imChrom,se1);
 imDiff = imCl - imOp;
-originalimage(1:1:height, 1:1:width) = 0;
 
 % Adaptiv tröskla genom bilden tills 6 blobbar med min area eller 2 med max area
 thresh = 0.8; step = 0.05;
