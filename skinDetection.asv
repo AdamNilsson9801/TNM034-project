@@ -1,4 +1,4 @@
-function faceMask = skinDetection(im)
+function [faceMask = skinDetection(im)
 
 [columns, rows, channel] = size(im);
 
@@ -58,8 +58,6 @@ blobs = regionprops(faceMask,'Area', 'PixelList');
         [~,ind] = max(cat(1,blobs.Area));
         pixels = blobs(ind).PixelList; 
     end
-
-%Create mask of the largest blob
 faceMask = maskFromMatrix(pixels, im);    
     
 end
