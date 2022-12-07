@@ -27,7 +27,7 @@ originalImage = im;
     se = strel('disk', 15);
     se2 = strel('rectangle', [10 60]);
     se3 = strel('rectangle', [2 10]);
-    se4 = strel('diamond', 5);
+    se4 = strel('rectangle', [40 2]);
     
     
     mouthMap = imdilate(mouthMap, se);
@@ -38,6 +38,8 @@ originalImage = im;
     mouthMap = imdilate(mouthMap, se);
     mouthMap = imfill(mouthMap, 'holes');
     mouthMap = imerode(mouthMap, se2);
+    mouthMap = imdilate(mouthMap, se4);
+    mouthMap = imerode(mouthMap, se4);
     
     blobs = regionprops(mouthMap,'Area','Centroid');
     

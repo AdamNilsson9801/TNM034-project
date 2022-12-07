@@ -36,17 +36,25 @@ end
 %Create 2 structure elements
 se = strel('disk',4);
 se2 = strel('disk',9);
+se3 = strel('disk',31);
+se4 = strel('square',25);
 
-% Do some morphological operations to improve the mask
 
+% Morphological operations
+
+%imshow(faceMask);
 faceMask = imopen(faceMask, se);
-faceMask = imclose(faceMask, se);
+faceMask = imclose(faceMask, se2);
+faceMask = imopen(faceMask, se2);
 
-faceMask = imdilate(faceMask, se2);
-faceMask = imdilate(faceMask, se2);
-faceMask = imerode(faceMask, se2);
-faceMask = imerode(faceMask, se2);
+faceMask = imdilate(faceMask, se3);
+faceMask = imerode(faceMask, se3);
+faceMask = imerode(faceMask, se4);
+faceMask = imdilate(faceMask, se4);
 
+
+
+%imshow(faceMask);
 %Check result
 %C = imfuse(im,faceMask,'falsecolor','Scaling','independent'); imshow(C)
 blobs = regionprops(faceMask,'Area', 'PixelList');
