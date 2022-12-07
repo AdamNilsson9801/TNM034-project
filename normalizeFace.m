@@ -1,7 +1,7 @@
 function im_norm = normalizeFace(im,eye_x,eye_y)
 
 % Make image grayscale  
-%im = rgb2gray(im);
+im = rgb2gray(im);
 
 eyeDiffVec = [eye_x(2)-eye_x(1) eye_y(2)-eye_y(1)];
 
