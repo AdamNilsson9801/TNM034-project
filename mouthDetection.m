@@ -1,4 +1,4 @@
-function [mouthMap, centroid] = createMouthMap(im)
+function [mouthMap, centroid] = mouthDetection(im)
 %CREATE_MOUTH_MAP takes in a RGB image (croped and rotated), returns x and
 %y position of the mouth
 
