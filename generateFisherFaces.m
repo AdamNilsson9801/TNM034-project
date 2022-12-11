@@ -1,0 +1,116 @@
+function [Fisher_faces,Class_weights] = generateFisherFaces(train_path,N_classes)
+%GENERATEFISHERFACES generate fisherfaces and class weights
+
+    %train_path = "images\DB2\";
+    %N_classes = 16;
+
+    file_path = append(train_path,'*.jpg');
+    imagefiles = dir(file_path); 
+    N_images = length(imagefiles);
+
+    
+    % Section 1: Read faces,mean face and Class mean-face
+    vec_images = zeros(400*300,N_images);
+    vec_images_class_tracker = zeros(N_images,1);
+    mean_face = zeros(400*300,1);
+    N_images_in_class = zeros(N_classes,1);
+    class_mean_face = zeros(400*300,N_classes);
+    for im_index = 1:N_images 
+        %Read the image
+        im_current = imread(append(train_path,imagefiles(im_index).name));
+        im_current = im2double(im_current);
+
+        %Get the position of the eyes
+        [eye_l,eye_r] = eyedetectionV2(im_current);
+        eye_x = [eye_l(1),eye_r(1)];
+        eye_y = [eye_l(2),eye_r(2)];
+        
+        %Normalize the face
+        im_current = normalizeFace(im_current,eye_x,eye_y);
+
+        %Find what class the image belongs to 
+        split_fileName = split(imagefiles(im_index).name,["_","."]);
+        im_class = str2double(split_fileName(2));
+
+        % Assign image 
+        vec_images(:,im_index) = reshape(im_current,400*300,1);
+        vec_images_class_tracker(im_index) = im_class; 
+        mean_face = mean_face + reshape(im_current,400*300,1);
+        N_images_in_class(im_class) = N_images_in_class(im_class) + 1;
+        class_mean_face(:,im_class) = class_mean_face(:,im_class) + reshape(im_current,400*300,1); 
+    end
+    class_mean_face = class_mean_face(:,:)./N_images_in_class';
+    mean_face = mean_face./N_images;
+
+    
+    % Section 2: Make eigenfaces and project the images
+    % Calculate the differece between the mean face and each face 
+    A_im_diff = zeros(400*300,N_images);
+    for im_index = 1:N_images
+        A_im_diff(:,im_index) =  vec_images(:,im_index) - mean_face;
+    end
+
+    % Compute MxM matrix L with eigenvector matix V 
+    L = A_im_diff'*A_im_diff;
+    [V_eigen_vector_matrix,eigen_values_diag] = eig(L);
+
+    % Make eigenfaces
+    U = A_im_diff*V_eigen_vector_matrix;
+
+    % Sort the eigenfaces
+    [eigen_values,ind] = sort(diag(eigen_values_diag),'descend');
+    U_sorted_ef = U(:,ind);
+
+    % Select the N-c most inprotant eigenFaces(N = N_images , c = N_classes)
+    eigen_faces = U_sorted_ef(:,1:(N_images-N_classes));
+
+    % Project the images and to the eigenfaces subspace
+    %A(300*400,N), e_f(300*400,N-c), -> im_efs(N-c,N)
+    im_eigenfacespace = eigen_faces'*vec_images;
+    mean_face_eigenfacespace = eigen_faces'*mean_face;
+    class_mean_face_eigenfacespace = eigen_faces'*class_mean_face;
+
+
+    % Section 3: Scatter matricies 
+
+    % Calculate the Between-class scatter matrix 
+    Scatter_between_class = zeros(N_images-N_classes);
+    for class_index = 1:N_classes
+        mean_face_class_diff = class_mean_face_eigenfacespace(:,class_index) - mean_face_eigenfacespace;
+        Scatter_between_class = Scatter_between_class + (mean_face_class_diff*mean_face_class_diff').*N_images_in_class(class_index);
+    end
+
+    % Calculate the Within-class scatter matrix
+    Scatter_within_class = zeros(N_images-N_classes);
+    for class_index = 1:N_classes
+        current_class_faces = zeros(N_images-N_classes,N_images_in_class(class_index));
+        image_class_index = 1;
+        for image_index = 1:N_images  
+            % Only use the images in the current class
+            if vec_images_class_tracker(image_index) == class_index
+                current_class_faces(:,image_class_index) = im_eigenfacespace(:,image_index) - class_mean_face_eigenfacespace(:,class_index);
+                image_class_index = image_class_index + 1;
+            end
+        end
+        Scatter_within_class = Scatter_within_class + current_class_faces*current_class_faces';
+    end
+
+
+    % Section 4: Making the fisher faces
+
+    % Make eigenvectors and sort them
+    [U_unsorted, eig_values] = eig(Scatter_between_class,Scatter_within_class);
+    [d,ind] = sort(diag(eig_values),'descend');
+    U_sorted = U_unsorted(:,ind);
+    
+    % Extract the c-1 first vectors
+    U_sorted = U_sorted(:,1:N_classes-1);
+    
+    % Get the fisher faces
+    Fisher_faces = eigen_faces*U_sorted;
+    
+    % Get the class weights in the fisherfacespace 
+    Class_weights = Fisher_faces'*class_mean_face;
+
+end
+

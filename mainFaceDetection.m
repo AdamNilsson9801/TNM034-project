@@ -220,6 +220,7 @@ mean_face = mean_face./N_images;
 %     load("db3images.mat");
 %     N_classes = 16;
 %     N_images = 54;
+
 %%
 % Section 2: Make eigenfaces and project the images
 % Calculate the differece between the mean face and each face 
@@ -301,10 +302,13 @@ Fisher_faces = eigen_faces*U_sorted;
 
 % Normalize the fisher_faces 
 for i = 1:N_classes-1
-    Fisher_faces(:,i) = Fisher_faces(:,i)./norm(Fisher_faces(:,i));
+    %Fisher_faces(:,i) = Fisher_faces(:,i)./norm(Fisher_faces(:,i));
 end
 
+
+
 %imshow(rescale(reshape(Fisher_faces(:,1),400,300)))
+
 %%
 % Fisher Faces test image 
 
@@ -314,8 +318,8 @@ end
 %imshow(rescale(reshape(Fisher_faces(:,1),400,300)))
 %imshow(reshape(mean_face,400,300));
 
-%test_path = "images\DB0\DB0\db0_4.jpg";
-test_path = "images\DB2\bl_01.jpg";
+test_path = "images\DB0\db0_4.jpg";
+%test_path = "images\DB2\il_16.jpg";
 im_test = imread(test_path);
 im_test = im2double(im_test);
 figure(556),imshow(im_test);
@@ -331,24 +335,13 @@ weight_im_fish = Fisher_faces'*vec_images;
 
 euclidian_distance_fish_class = zeros(N_classes,1);
 for class_index = 1:N_classes
-    euclidian_distance_fish_class(class_index) = norm(weight_test_image_fish - weight_class_fish(class_index));
+    euclidian_distance_fish_class(class_index) = norm(weight_test_image_fish - weight_class_fish(:,class_index));
 end
 [minDist,minClass] = min(euclidian_distance_fish_class);
 clc;
 disp('Class Distance');
 disp(['Min distance: ',num2str(minDist)]);
 disp(['Beloning to class ',num2str(minClass)]);
-
-euclidian_distance_fish_img = zeros(N_images,1);
-for image_index = 1:N_images
-    euclidian_distance_fish_img(image_index) = norm(weight_test_image_fish - weight_im_fish(image_index));
-end
-[minDist,minImage] = min(euclidian_distance_fish_img);
-disp('Image Distance');
-disp(['Min distance: ',num2str(minDist)]);
-disp(['Closest to image ',num2str(minImage)])
-disp(['Beloning to class ',num2str(vec_images_class_tracker(minImage))]);
-
 
 %imshow(reshape(im_test,400,300));
 %figure, imshow(reshape(im_diff,400,300));
@@ -359,6 +352,13 @@ disp(['Beloning to class ',num2str(vec_images_class_tracker(minImage))]);
 %ew = eigen_faces'*(im_test-mean_face);
 %figure,imshow(rescale(reshape(mean_face + eigen_faces*ew,400,300)));
 %imshow(rescale(reshape(eigen_faces*class_mean_face_eigenfacespace(:,5),400,300)));
+
+%%
+% Save the fisherfaces and the class weights 
+weight_class = weight_class_fish;
+save("FisherFace_weights.mat",'Fisher_faces','weight_class');
+
+
 %%
 %norm test 
 
