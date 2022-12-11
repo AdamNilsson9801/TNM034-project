@@ -1,8 +1,10 @@
 function faceMask = skinDetection(im)
+%Takes in an image and returns a binary image, representing a the face.
 
+%Excract columns and rows
 [columns, rows, channel] = size(im);
 
-%RGB to HSV, separate
+%RGB to HSV and get the hue
 HSV = rgb2hsv(im);
 H = HSV(:,:,1);
 
@@ -12,7 +14,7 @@ Y = YCgCr(:,:,1);
 Cg = YCgCr(:,:,2);
 Cr = YCgCr(:,:,3);
 
-%Convert image to binary image
+%Convert image to binary image with thresholds
 faceMask = im2bw(im);
 
 for i = 1:1:columns
@@ -32,17 +34,15 @@ for i = 1:1:columns
         end
     end
 end
-imshow(faceMask);
-%Create 2 structure elements
+
+
+%Create structure elements
 se = strel('disk',4);
 se2 = strel('disk',9);
 se3 = strel('disk',31);
 se4 = strel('square',25);
 
-
 % Morphological operations
-
-%imshow(faceMask);
 faceMask = imopen(faceMask, se);
 faceMask = imclose(faceMask, se2);
 faceMask = imopen(faceMask, se2);
@@ -52,23 +52,19 @@ faceMask = imerode(faceMask, se3);
 faceMask = imerode(faceMask, se4);
 faceMask = imdilate(faceMask, se4);
 
-
-
-%imshow(faceMask);
-%Check result
-%C = imfuse(im,faceMask,'falsecolor','Scaling','independent'); imshow(C)
+%Extract area and PixelList from all blobs
 blobs = regionprops(faceMask,'Area', 'PixelList');
     
-    if isempty(blobs)
-        centroid = [0,0];
-        disp('No face was found')
+    if isempty(blobs)   %If no blobs was found, display error message
+        pixelList = 0;
+        disp('No face was found');
     else
-        [~,ind] = max(cat(1,blobs.Area));
-        pixels = blobs(ind).PixelList; 
+        [~,ind] = max(cat(1,blobs.Area));   %Get index of the largest blob
+        pixelList = blobs(ind).PixelList;      %Get the pixel list of the largest blob
     end
 
 %Create mask of the largest blob
-faceMask = maskFromMatrix(pixels, im);    
+faceMask = maskFromMatrix(pixelList, im);    
     
 end
 

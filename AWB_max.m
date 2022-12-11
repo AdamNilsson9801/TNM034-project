@@ -1,4 +1,6 @@
 function imOut = AWB_max(im)
+%Takes in a non-color corrected image and returns an image that is white
+%balanced (white world assumption)
 
 %Seperate channels
 R = im(:,:,1);
