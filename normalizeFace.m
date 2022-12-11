@@ -24,9 +24,10 @@ eye_right = im_center + cen2right';
 
 % Crop the image with the new eye position
 eye_diff = eye_right(1) - eye_left(1);
-eye_side_ratio = 0.65;
-eye_top_ratio = 1.35;
-eye_bot_ratio = 1.91;
+
+eye_side_ratio = 0.35;
+eye_top_ratio = 0.4;
+eye_bot_ratio = 1.5;
 
 R_TL = eye_left + [-eye_diff*eye_side_ratio -eye_diff*eye_top_ratio];
 R_BR = eye_right + [eye_diff*eye_side_ratio eye_diff*eye_bot_ratio];
