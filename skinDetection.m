@@ -20,9 +20,9 @@ for i = 1:1:columns
         if ( Y(i,j) > 110/255.0 )
             if ( 90/255.0 < Cg(i,j) ) && ( Cg(i,j) < 125/255.0)
                 if ( 135/255.0 < Cr(i,j) ) && ( Cr(i,j) < 175/255.0)
-                    %if ( 0.05 < H(i,j) ) && ( H(i,j) < 0.9412)
+                    if ( 0.05 < H(i,j) ) && ( H(i,j) < 0.9412)
                         faceMask(i,j, :) = 1;
-                    %end
+                    end
                 
                 end
             else, faceMask(i,j, :) = 0;
@@ -32,7 +32,7 @@ for i = 1:1:columns
         end
     end
 end
-
+imshow(faceMask);
 %Create 2 structure elements
 se = strel('disk',4);
 se2 = strel('disk',9);
