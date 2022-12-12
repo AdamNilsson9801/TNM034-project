@@ -14,7 +14,7 @@ function id = tnm034(im)
 im = im2double(im);
 
 %Get the position of the eyes
-[eye_l,eye_r] = eyedetectionV2(im_current);
+[eye_l,eye_r] = eyedetectionV2(im);
 eye_x = [eye_l(1),eye_r(1)];
 eye_y = [eye_l(2),eye_r(2)];
 
@@ -24,10 +24,11 @@ im = reshape(im,400*300,1);
 
 
 %Load in the fisher face and class_weights 
-load("FisherFace_weights.mat");
+load("FisherFace_weights.mat", "Fisher_faces", "weight_class");
 
 %Get the image weights 
 weight_image = Fisher_faces'*im;
+N_classes = 16;
 
 euclidian_distance_fish_class = zeros(N_classes,1);
 for class_index = 1:N_classes
