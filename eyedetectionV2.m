@@ -2,14 +2,14 @@ function [eye1, eye2] = eyedetectionV2(im)
 % EYEDETECTIONV1 takes image input and returns two 1x2 vectors, one for each eyes x,y position.
 
 % vitbalans, endast för bilder med tonförändring
-im = AWB_max(im);
+im = AWB_avg(im);
 
 % applicera facemask
 facemask = skinDetection(im);
 im = im.*facemask;
 
 % munposition, om mouth_pos (0,0) hittades den inte
-[~, mouth_pos] = mouthDetection(im);
+mouth_pos = mouthDetection(im);
 
 % konvertera bilden till NTSC format för att enklare hitta eye dot genom chromasitet 
 % använd endast luminocity kanalen
