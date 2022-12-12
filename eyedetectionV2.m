@@ -2,7 +2,7 @@ function [eye1, eye2] = eyedetectionV2(im)
 % EYEDETECTIONV1 takes image input and returns two 1x2 vectors, one for each eyes x,y position.
 
 % vitbalans, endast för bilder med tonförändring
-im = AWB_avg(im);
+im = AWB_max(im);
 
 % applicera facemask
 facemask = skinDetection(im);
