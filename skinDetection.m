@@ -4,10 +4,6 @@ function faceMask = skinDetection(im)
 %Excract columns and rows
 [columns, rows, channel] = size(im);
 
-%RGB to HSV and get the hue
-HSV = rgb2hsv(im);
-H = HSV(:,:,1);
-
 %RGB to YCgCr, separate channels
 YCgCr = rgb2ycgcr(im);
 Y = YCgCr(:,:,1);
@@ -22,10 +18,7 @@ for i = 1:1:columns
         if ( Y(i,j) > 110/255.0 )
             if ( 90/255.0 < Cg(i,j) ) && ( Cg(i,j) < 125/255.0)
                 if ( 135/255.0 < Cr(i,j) ) && ( Cr(i,j) < 175/255.0)
-                    if ( 0.05 < H(i,j) ) && ( H(i,j) < 0.9412)
                         faceMask(i,j, :) = 1;
-                    end
-                
                 end
             else, faceMask(i,j, :) = 0;
                 
