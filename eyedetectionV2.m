@@ -9,7 +9,7 @@ facemask = skinDetection(im);
 im = im.*facemask;
 
 % munposition, om mouth_pos (0,0) hittades den inte
-[~, mouth_pos] = mouthDetection(im);
+mouth_pos = mouthDetection(im);
 
 % konvertera bilden till NTSC format för att enklare hitta eye dot genom chromasitet 
 % använd endast luminocity kanalen

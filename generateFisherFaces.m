@@ -1,9 +1,9 @@
-function [Fisher_faces,Class_weights] = generateFisherFaces(train_path,N_classes)
+function [Fisher_faces,Class_weights] = generateFisherFaces(train_path,N_classes,method)
 %GENERATEFISHERFACES generate fisherfaces and class weights
-
-    %train_path = "images\DB2\";
-    %N_classes = 16;
-
+    % The method can be 'auto' , 'manual' or 'hybrid', default if auto. 
+    % when using 'hybrid' click the left and right eye if the detection is
+    % insufficient, and close the figure if the detection is acceptable
+    
     file_path = append(train_path,'*.jpg');
     imagefiles = dir(file_path); 
     N_images = length(imagefiles);
@@ -21,9 +21,28 @@ function [Fisher_faces,Class_weights] = generateFisherFaces(train_path,N_classes
         im_current = im2double(im_current);
 
         %Get the position of the eyes
-        [eye_l,eye_r] = eyedetectionV2(im_current);
-        eye_x = [eye_l(1),eye_r(1)];
-        eye_y = [eye_l(2),eye_r(2)];
+        if strcmp(method,'manual')
+            figure(55),imshow(im_current);
+            [eye_x,eye_y] = ginput(2);
+            close(55);
+        elseif strcmp(method,'hybrid')
+            [eye_l,eye_r] = eyedetectionV2(im_current);
+            try 
+                figure(55),imshow(im_current);
+                hold on;
+                plot([eye_l(1),eye_r(1)],[eye_l(2),eye_r(2)],'or');
+                hold off;
+                [eye_x,eye_y] = ginput(2);
+                close(55);
+            catch
+                eye_x = [eye_l(1),eye_r(1)];
+                eye_y = [eye_l(2),eye_r(2)];
+            end
+        else % auto or empty
+            [eye_l,eye_r] = eyedetectionV2(im_current);
+            eye_x = [eye_l(1),eye_r(1)];
+            eye_y = [eye_l(2),eye_r(2)];
+        end
         
         %Normalize the face
         im_current = normalizeFace(im_current,eye_x,eye_y);

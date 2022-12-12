@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-function id = tnm034(im)
-%
+function [id,minDist] = tnm034(im)
+% TODO Change back to just id 
 % im: Image of unknown face, RGB-image in uint8 format in the
 % range [0,255]
 %
@@ -18,30 +18,37 @@ im = im2double(im);
 eye_x = [eye_l(1),eye_r(1)];
 eye_y = [eye_l(2),eye_r(2)];
 
-%Normalize the face and reshape to vector 
-im = normalizeFace(im,eye_x,eye_y);
-im = reshape(im,400*300,1);
+if (eye_l(1) ~= 0) && (eye_r(1) ~= 0) % when the eyes can be found 
+    
+    %Normalize the face and reshape to vector 
+    im = AWB_max(im);
+    im = normalizeFace(im,eye_x,eye_y);
+    im = reshape(im,400*300,1);
 
 
-%Load in the fisher face and class_weights 
-load("FisherFace_weights.mat", "Fisher_faces", "weight_class");
+    %Load in the fisher face and class_weights 
+    load("FisherFace_weights.mat", "Fisher_faces", "weight_class");
 
-%Get the image weights 
-weight_image = Fisher_faces'*im;
-N_classes = 16;
+    %Get the image weights 
+    weight_image = Fisher_faces'*im;
+    N_classes = 16;
 
-euclidian_distance_fish_class = zeros(N_classes,1);
-for class_index = 1:N_classes
-    euclidian_distance_fish_class(class_index) = norm(weight_image - weight_class(:,class_index));
-end
-[minDist,id] = min(euclidian_distance_fish_class);
+    euclidian_distance_fish_class = zeros(N_classes,1);
+    for class_index = 1:N_classes
+        euclidian_distance_fish_class(class_index) = norm(weight_image - weight_class(:,class_index));
+    end
+    [minDist,id] = min(euclidian_distance_fish_class);
 
-distance_threshold = 9.0;
+    %distance_threshold = 30.0;
+    distance_threshold = 5.0;
 
-if minDist > distance_threshold
+    if minDist > distance_threshold
+        id = 0;
+    end
+else
     id = 0;
+    minDist = 0;
 end
-
 
 end
 
