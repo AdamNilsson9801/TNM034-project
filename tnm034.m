@@ -5,8 +5,8 @@ function id = tnm034(im)
 % range [0,255]
 %
 % id: The identity number (integer) of the identified person,
-% i.e. â€˜1â€™, â€˜2â€™,â€¦,â€˜16â€™ for the persons belonging to â€˜db1â€™
-% and â€˜0â€™ for all other faces.
+% i.e. ‘1’, ‘2’,…,‘16’ for the persons belonging to ‘db1’
+% and ‘0’ for all other faces.
 %
 % Your program code.
 %%%%%%%%%%%%%%%%%%%%%%%%%%
