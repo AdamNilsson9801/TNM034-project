@@ -67,7 +67,7 @@ end
 if blobs_amount > 2
     for i = 1:1:blobs_amount
         box = blobs(i).BoundingBox;
-        if blobs(i).Centroid(2) > bottom || blobs(i).Centroid(2) > im_height - h_remove || box(3) > maxLength || box(4) > maxLength
+        if blobs(i).Centroid(2) > bottom || box(3) > maxLength || box(4) > maxLength
             imThresh(round(box(2)):round(box(4) + box(2)-1), round(box(1)):round(box(3) + box(1)-1)) = 0;
         end
     end
