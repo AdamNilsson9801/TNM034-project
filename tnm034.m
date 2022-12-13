@@ -13,6 +13,8 @@ function [id,minDist] = tnm034(im)
 
 im = im2double(im);
 
+%Change image
+im = changeImage(im);
 %Get the position of the eyes
 [eye_l,eye_r] = eyedetectionV2(im);
 eye_x = [eye_l(1),eye_r(1)];
